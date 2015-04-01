@@ -1,20 +1,32 @@
 package com.concur.service.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import springdox.documentation.swagger2.annotations.EnableSwagger2;
+import springdox.documentation.spring.web.plugins.DocumentationConfigurer;
+
+import springdox.documentation.spi.DocumentationType;
+import springdox.documentation.service.ApiInfo;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Set;
 
 
 @Configuration
-@ComponentScan(basePackages = "com.concur.service.api")
 @EnableWebMvc
 @EnableSwagger2 //Loads the spring beans required by the framework
 public class SwaggerConfig {
+
+private DocumentationConfigurer documentationConfigurer;
+
+    @Autowired
+    public void setDocumentationConfigurer(DocumentationConfigurer configurer){
+        this.documentationConfigurer = documentationConfigurer;
+    }
 
     @Bean
     ApiInfo apiInfo() {
@@ -30,8 +42,14 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket customImplementation(){
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo());
+    public DocumentationConfigurer customImplementation(){
+        return new DocumentationConfigurer(DocumentationType.SWAGGER_2)
+            .groupName("default")
+            .includePatterns(".*replace Swagger Petstore with your api classes.*")
+            .apiInfo(apiInfo());
     }
+
+    @Bean
+    ObjectMapper objectMapper() { return new ObjectMapper(); }
 
 }
